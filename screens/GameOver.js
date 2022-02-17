@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    width: Dimensions.get('window').width * 0.7,
-    height: Dimensions.get('window').width * 0.7,
+    width: Dimensions.get('window').width * 0.3,
+    height: Dimensions.get('window').width * 0.3,
     borderRadius: (Dimensions.get('window').width * 0.7) / 2,
     borderWidth: 3,
     borderColor: 'black',

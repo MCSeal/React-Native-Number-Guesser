@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
   Keyboard,
   Alert,
   Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import Card from '../components/Card';
 import Colors from '../constants/colors';
@@ -22,6 +24,10 @@ const StartGameScreen = (props) => {
   const [enteredValue, setEnteredValue] = useState('');
   const [confirmed, setConfirmed] = useState(false);
   const [selectedNumber, setSelectedNumber] = useState();
+  const [buttonWidth, setButtonWidth] = useState(
+    Dimensions.get('window').width / 4
+  );
+
   const numberInputHandler = (inputText) => {
     //replace will use a reg exp that will remove anything that isn't digits, and then set it using the setter
     setEnteredValue(inputText.replace(/[^0-9]/g, ''));
@@ -31,6 +37,17 @@ const StartGameScreen = (props) => {
     setEnteredValue('');
     setConfirmed(false);
   };
+
+  useEffect(() => {
+    const updateLayout = () => {
+      setButtonWidth(Dimensions.get('window').width / 4);
+    };
+
+    Dimensions.addEventListener('change', updateLayout);
+    return () => {
+      Dimensions.removeEventListener('change', updateLayout);
+    };
+  });
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(enteredValue);
@@ -61,44 +78,48 @@ const StartGameScreen = (props) => {
   }
 
   return (
-    <View style={styles.screen}>
-      <TitleText style={styles.title}>Start Game!</TitleText>
-      <Card style={styles.inputContainer}>
-        <View style={styles.inputText}>
-          <BodyText style={styles.text}>Select a number:</BodyText>
+    <ScrollView>
+      <KeyboardAvoidingView behavior="position" keyboardVerticalOffset={30}>
+        <View style={styles.screen}>
+          <TitleText style={styles.title}>Start Game!</TitleText>
+          <Card style={styles.inputContainer}>
+            <View style={styles.inputText}>
+              <BodyText style={styles.text}>Select a number:</BodyText>
 
-          <Input
-            style={styles.input}
-            blurOnPress={true}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="number-pad"
-            maxLength={2}
-            onChangeText={numberInputHandler}
-            value={enteredValue}
-          />
+              <Input
+                style={styles.input}
+                blurOnPress={true}
+                autoCapitalize="none"
+                autoCorrect={false}
+                keyboardType="number-pad"
+                maxLength={2}
+                onChangeText={numberInputHandler}
+                value={enteredValue}
+              />
+            </View>
+            <View style={styles.buttonContainer}>
+              <View style={{ width: buttonWidth }}>
+                <Button
+                  title="Reset"
+                  onPress={() => {}}
+                  color={Colors.accent}
+                  onPress={resetInputHandler}
+                />
+              </View>
+              <View style={{ width: buttonWidth }}>
+                <Button
+                  title="Confirm"
+                  onPress={() => {}}
+                  color={Colors.primary}
+                  onPress={confirmInputHandler}
+                />
+              </View>
+            </View>
+          </Card>
+          {confirmedOutput}
         </View>
-        <View style={styles.buttonContainer}>
-          <View style={styles.button}>
-            <Button
-              title="Reset"
-              onPress={() => {}}
-              color={Colors.accent}
-              onPress={resetInputHandler}
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              title="Confirm"
-              onPress={() => {}}
-              color={Colors.primary}
-              onPress={confirmInputHandler}
-            />
-          </View>
-        </View>
-      </Card>
-      {confirmedOutput}
-    </View>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -122,10 +143,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
-  // dimensions
-  button: {
-    width: Dimensions.get('window').width / 4,
-  },
+  // // dimensions
+  // button: {
+  //   width: Dimensions.get('window').width / 4,
+  // },
   title: { fontSize: 40, marginVertical: 10, fontFamily: 'open-sans-bold' },
   input: {
     width: 50,
